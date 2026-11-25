@@ -2,10 +2,10 @@
 
 ## Hosted runner baseline (2026-11-25)
 
-The baseline for `bench.yml` on a GitHub-hosted `ubuntu-24.04` runner (bench run 45701436864,
+The baseline for `bench.yml` on a GitHub-hosted `ubuntu-24.04` runner (a `bench.yml` run on 2026-11-25,
 AMD EPYC 9V74, 2 vCPUs, avx2 bmi2 avx512f/bw/vl/vnni). Rust / Go time, Go default GOMAXPROCS. A
-shared hosted VM is noisier than the dedicated node of the sections below, so do not compare
-these numbers with them as a regression.
+shared hosted VM is noisier than the Ryzen 7 9800X3D machine of the sections below, so do not
+compare these numbers with them as a regression.
 
 | class | default | v4 | PGO | PGO + BOLT |
 |---|---|---|---|---|
@@ -23,7 +23,7 @@ crate. The one large stream (67.1 MB out) decodes in 65.6 ms against Go's 64.0 m
 2 vCPUs the parallel decode falls back to the serial one (it needs 4 workers). On a runner without
 AVX-512, `tests/parity/bench.sh` times the default builds in the v4 columns.
 
-## Dedicated node (Ryzen 7 9800X3D)
+## Ryzen 7 9800X3D (AVX-512)
 
 `bench.yml` has, per input class, the default build and the v4 build side by side (Go
 `GOAMD64=v4`, Rust `-C target-cpu=x86-64-v4`), and a table of the Rust bench with PGO and with
@@ -66,7 +66,7 @@ fewer instructions per symbol. One large stream (64 MiB of the fixtures' outputs
 Go 47.6 ms, Rust `decode_parallel_into` on all CPUs 25.8 ms (0.54), Rust with `max_threads = 1`
 47.4 ms (0.99).
 
-## Dedicated node: the first unsafe fast loop
+## Ryzen 7 9800X3D: the first unsafe fast loop
 
 
 `.github/workflows/bench.yml` (not a required check; on `workflow_dispatch` and push to `main`)
@@ -78,7 +78,7 @@ no thread, and Go's decode has no goroutines), so the first table is Go at its d
 geometric mean of the per-file ratios (`geo mean`) and the ratio of the worst file (`worst file`);
 the script fails if the two sides decode different files or give a different output size.
 
-On the dedicated amd64 node (Ryzen 7 9800X3D, BMI2 and AVX-512 VNNI), a run of the first
+On an amd64 machine (Ryzen 7 9800X3D, BMI2 and AVX-512 VNNI), a run of the first
 unsafe version (the fast-loop writes and the fused copy + Adler-32) gave the Rust time over the Go time, by
 input class: text 0.97, image 0.99, random 0.77, runs 0.96, zeros 0.98, png 0.96, tiff 1.06, all
 1.01. The worst file is `tiff-rgb512-gradient` at 1.59. The decode output is written straight

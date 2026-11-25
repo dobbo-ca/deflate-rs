@@ -25,9 +25,8 @@
 //! The cancel flag is checked at each DEFLATE block, and inside a block every 64 KiB of output;
 //! a set flag is [`Error::Cancelled`] (a reader's `io::Error` has kind `Other`).
 //!
-//! Threads: `Limits` has no `max_threads` field, deliberately (an exception to the shared
-//! convention), so that tiff-rs, which builds the struct literal `Limits { max_output, max_alloc
-//! }`, compiles unchanged. Every function runs on the calling thread only, except
+//! Threads: `Limits` has no `max_threads` field, deliberately, so that tiff-rs, which builds the
+//! struct literal `Limits { max_output, max_alloc }`, compiles unchanged. Every function runs on the calling thread only, except
 //! [`decode_parallel_into`] and [`zlib::decode_parallel_into`], which take `max_threads` as an
 //! argument (the calling thread included; 1 spawns nothing): they decode one large stream with
 //! up to that many threads, spawned for the call (`std::thread::scope`, no pool), and give the

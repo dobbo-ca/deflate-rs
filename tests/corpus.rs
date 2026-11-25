@@ -1,5 +1,5 @@
 //! `DEFLATE_STREAMS=<file>`: records of `[u32 LE length][zlib stream]...`, for example the tiles
-//! of a slide. Never write or log the stream bytes. Skipped when the variable is not set.
+//! of a slide (user-provided data). Never write or log the stream bytes. Skipped when the variable is not set.
 
 mod common;
 use common::*;

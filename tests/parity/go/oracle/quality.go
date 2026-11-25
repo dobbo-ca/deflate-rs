@@ -1,6 +1,6 @@
 // The real-file check (docs/parity.md, "Real-file check"):
 //
-//	oracle -qgen <tiles> <fixtures> <out> <slide>...   write the gate's deflate inputs
+//	oracle -qgen <tiles> <fixtures> <out> <slide>...   write the deflate inputs
 //	oracle -qdecode <in> <out>                         decode each input to a PGM or PPM
 //
 // examples/quality.rs is the Rust side of -qdecode. An input's name carries what the decode needs:
@@ -43,7 +43,7 @@ const (
 )
 
 // largeStream compresses one slide's tile pixels as they come, so the oracle never holds more
-// than one tile (the oracle runs inside BuildKit: its memory stays bounded).
+// than one tile (the oracle runs inside a container build: its memory stays bounded).
 type largeStream struct {
 	slide string
 	f     *os.File
@@ -91,10 +91,10 @@ func (l *largeStream) close() error {
 	return l.f.Close()
 }
 
-// qgen writes the gate's inputs into out:
+// qgen writes the inputs into out:
 //   - deflate tiles: every deflate-compressed tile or strip (TIFF compression 8 or 32946) of the
 //     slides, as it is in the file, at most maxPerIFD per IFD;
-//   - tiles: every JPEG tile that `quality tiles` wrote, decoded with image/jpeg, then zlib
+//   - tiles: every JPEG tile found in the <tiles> directory (user-provided), decoded with image/jpeg, then zlib
 //     compressed by compress/zlib as a TIFF writer does (level 1, 6 or 9 and predictor 1 or 2,
 //     picked by a hash of the name);
 //   - large: per slide, its decoded tiles in name order as one zlib stream (level 6, 4096 wide,

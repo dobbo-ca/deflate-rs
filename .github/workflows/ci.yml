@@ -10,7 +10,6 @@ jobs:
   # are saved to the Actions cache, one scope per job. arm64 and parity-arm64 run on a native arm64
   # runner.
   # A PR needs only `test`; arm64, parity and parity-arm64 run on main and on workflow_dispatch.
-  # A crate is done only when they are green on main.
   test:
     runs-on: ubuntu-24.04
     timeout-minutes: 30

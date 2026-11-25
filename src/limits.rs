@@ -3,9 +3,8 @@
 ///
 /// # Threading
 ///
-/// There is no `max_threads` field, on purpose: an exception to the shared convention that every
-/// crate's `Limits` has one, kept so that tiff-rs, which builds the `Limits { max_output,
-/// max_alloc }` struct literal, compiles unchanged. Every call runs on the calling thread only
+/// There is no `max_threads` field, on purpose, so that tiff-rs, which builds
+/// the `Limits { max_output, max_alloc }` struct literal, compiles unchanged. Every call runs on the calling thread only
 /// (the equivalent of `max_threads = 1`), except [`decode_parallel_into`](crate::decode_parallel_into)
 /// and [`zlib::decode_parallel_into`](crate::zlib::decode_parallel_into), which take
 /// `max_threads` as an argument; `max_alloc` is then the peak of all their threads together.
