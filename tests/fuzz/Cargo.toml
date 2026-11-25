@@ -1,0 +1,73 @@
+[package]
+name = "deflate-fuzz"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+deflate = { path = "../.." }
+# An independent decoder for the output oracle of the decode targets: tests/fuzz/ only.
+miniz_oxide = "0.8"
+
+# Not part of the root package: only this crate may depend on libfuzzer-sys.
+[workspace]
+
+[[bin]]
+name = "decode"
+path = "fuzz_targets/decode.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "zlib_decode"
+path = "fuzz_targets/zlib_decode.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "decode_limit"
+path = "fuzz_targets/decode_limit.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "reader"
+path = "fuzz_targets/reader.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "predictor"
+path = "fuzz_targets/predictor.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "adler32"
+path = "fuzz_targets/adler32.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "kernels"
+path = "fuzz_targets/kernels.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "parallel"
+path = "fuzz_targets/parallel.rs"
+test = false
+doc = false
+bench = false

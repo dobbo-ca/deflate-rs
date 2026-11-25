@@ -1,0 +1,13 @@
+[package]
+name = "deflate"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99"
+license = "Apache-2.0"
+description = "DEFLATE (RFC 1951) and zlib (RFC 1950) decoding, TIFF predictor 2 and RGBA expand. Rust port of github.com/dobbo-ca/deflate-go."
+publish = false
+
+[dependencies]
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(fuzzing)"] }

@@ -1,0 +1,2 @@
+tiff-rgb512-noise
+strategy-fixed-text
