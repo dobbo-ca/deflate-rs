@@ -19,7 +19,8 @@ RUN --mount=type=cache,id=deflate-registry,target=/usr/local/cargo/registry --mo
 RUN --mount=type=cache,id=deflate-registry,target=/usr/local/cargo/registry --mount=type=cache,id=deflate-target,target=/src/target \
     cargo clippy --locked --all-targets --target aarch64-unknown-linux-gnu -- -D warnings
 RUN --mount=type=cache,id=deflate-registry,target=/usr/local/cargo/registry --mount=type=cache,id=deflate-target,target=/src/target \
-    cargo test --locked
+    cargo test --locked \
+    && cargo test --locked --lib -- --nocapture dispatch_picks_tier
 RUN --mount=type=cache,id=deflate-registry,target=/usr/local/cargo/registry --mount=type=cache,id=deflate-target,target=/src/target \
     DEFLATE_SIMD=scalar cargo test --locked
 RUN --mount=type=cache,id=deflate-registry,target=/usr/local/cargo/registry --mount=type=cache,id=deflate-target,target=/src/target \
@@ -29,7 +30,8 @@ RUN --mount=type=cache,id=deflate-registry,target=/usr/local/cargo/registry --mo
 # then DEFLATE_SIMD=scalar). Go parity on aarch64 is the parity-arm64 stage.
 FROM src AS arm64
 RUN --mount=type=cache,id=deflate-registry,target=/usr/local/cargo/registry --mount=type=cache,id=deflate-target,target=/src/target \
-    cargo test --locked
+    cargo test --locked \
+    && cargo test --locked --lib -- --nocapture dispatch_picks_tier
 RUN --mount=type=cache,id=deflate-registry,target=/usr/local/cargo/registry --mount=type=cache,id=deflate-target,target=/src/target \
     DEFLATE_SIMD=scalar cargo test --locked
 
