@@ -217,6 +217,9 @@ the tests with `DEFLATE_SIMD=scalar`, and an aarch64 release build in `test`; th
 job runs the tests with both tiers on a native arm64 runner; the `parity` job compares the manifest of
 the Go oracle with that of `examples/oracle.rs`, and `parity-arm64` does the same on the arm64
 runner. The jobs build the Dockerfile stages with BuildKit on GitHub-hosted runners.
+SIMD tiers in CI: scalar, AVX2 (x86_64) and NEON (aarch64) natively; the AVX-512 VNNI kernels
+under Intel SDE (`avx512-sde`: the unit tests on `-spr` with `DEFLATE_SIMD=avx512`, which fails on
+a CPU without AVX-512), and natively when the hosted runner has AVX-512.
 
 ## Real-file check
 

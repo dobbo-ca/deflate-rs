@@ -1,7 +1,7 @@
 //! Adler-32. `scalar` is the reference; the SIMD tiers (AVX-512 VNNI and AVX2 on x86_64, NEON on
 //! aarch64) sit beside it. Each tier has two kernels: the sum, and a copy that sums what it
 //! copies in the same pass. The tier is picked once; `DEFLATE_SIMD=scalar` (and Miri) force the
-//! scalar one.
+//! scalar one, and `DEFLATE_SIMD=avx512` panics unless the AVX-512 VNNI tier is available.
 //!
 //! The kernels are safe `#[target_feature]` fns. `unsafe` is only in each tier's two calls into
 //! them, next to its `detect`, in each tier's `mem` module of loads and stores, and in `extend`
@@ -137,16 +137,36 @@ fn extend(copy: CopyKernel, out: &mut Vec<u8>, src: &[u8], adler: u32) -> u32 {
 }
 
 /// The tier `sum` and `extend_sum` run: the best SIMD one this CPU has, or scalar
-/// (`DEFLATE_SIMD=scalar`, Miri, or no SIMD).
+/// (`DEFLATE_SIMD=scalar`, Miri, or no SIMD). `DEFLATE_SIMD=avx512` requires the AVX-512 VNNI tier
+/// (for CI under an emulator): it panics on a CPU without it, so a run cannot fall back to AVX2
+/// without a word.
 fn selected() -> Tier {
     static TIER: OnceLock<Tier> = OnceLock::new();
     *TIER.get_or_init(|| {
         if cfg!(miri) || std::env::var_os("DEFLATE_SIMD").is_some_and(|v| v == "scalar") {
             SCALAR
         } else {
+            if std::env::var_os("DEFLATE_SIMD").is_some_and(|v| v == "avx512") {
+                assert!(
+                    avx512_kernels(),
+                    "DEFLATE_SIMD=avx512, but this CPU lacks AVX-512 F, BW, VL and VNNI"
+                );
+            }
             detect().unwrap_or(SCALAR)
         }
     })
+}
+
+/// Whether the AVX-512 VNNI kernels run here: false on a target without them.
+fn avx512_kernels() -> bool {
+    #[cfg(target_arch = "x86_64")]
+    {
+        vnni::detect().is_some()
+    }
+    #[cfg(not(target_arch = "x86_64"))]
+    {
+        false
+    }
 }
 
 /// The name of the tier that `selected` picked.
@@ -165,9 +185,19 @@ mod tests {
         (*state >> 24) as u8
     }
 
-    /// `sum` runs the best SIMD tier, not scalar, unless `DEFLATE_SIMD=scalar` says so.
+    /// `sum` runs the best SIMD tier, not scalar, unless `DEFLATE_SIMD=scalar` says so. Also logs
+    /// the tier in use (`--nocapture`), so a CI log shows what the run tested; under
+    /// `DEFLATE_SIMD=avx512` the tier must be the AVX-512 one.
     #[test]
     fn dispatch_picks_tier() {
+        eprintln!(
+            "SIMD tier: {}, AVX-512 kernels: {}",
+            tier(),
+            avx512_kernels()
+        );
+        if std::env::var_os("DEFLATE_SIMD").is_some_and(|v| v == "avx512") {
+            assert_eq!(tier(), "avx512_vnni");
+        }
         let scalar = std::env::var_os("DEFLATE_SIMD").is_some_and(|v| v == "scalar");
         let want = if scalar {
             "scalar"
@@ -185,7 +215,8 @@ mod tests {
     fn simd_matches_scalar() {
         #[cfg(target_arch = "aarch64")]
         assert!(detect().is_some(), "NEON expected on aarch64");
-        // CI x86_64 runners have AVX2; AVX-512 VNNI is tested when the CPU has it.
+        // CI x86_64 runners have AVX2; AVX-512 VNNI is tested when the CPU has it (job `avx512-sde`
+        // under an emulator).
         #[cfg(target_arch = "x86_64")]
         assert!(avx2::detect().is_some(), "AVX2 expected on x86_64");
         let tiers: Vec<Kernel> = kernels().into_iter().map(|(_, k)| k).collect();
