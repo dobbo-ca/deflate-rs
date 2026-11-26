@@ -9,9 +9,9 @@ fast as possible, every input and output is checked at the kernel boundary in sa
 the tests and a differential fuzz target compare it with.
 
 - adler32 (`src/adler32/`) has SIMD tiers: AVX-512 VNNI and AVX2 (x86_64) and NEON (aarch64),
-  picked once at first use by runtime detection; `DEFLATE_SIMD=scalar` forces the scalar code
-  (`DEFLATE_SIMD=avx512` panics on a CPU without AVX-512 F, BW, VL and VNNI, for CI under an
-  emulator), which is always compiled and is the oracle. Each tier has two kernels: the sum, and a copy that
+  picked once at first use by runtime detection; `DEFLATE_SIMD=scalar` forces the scalar code,
+  which is always compiled and is the oracle, and `DEFLATE_SIMD=avx512` panics on a CPU without
+  AVX-512 F, BW, VL and VNNI (for CI under an emulator). Each tier has two kernels: the sum, and a copy that
   sums what it copies in the same pass (a zlib stored block is copied and summed at once). The
   kernels are safe `#[target_feature]` fns that take arrays (`&[u8; N]`, from `as_chunks` in
   safe code); `unsafe` is only in each tier's two calls into them, next to its detection, in the
