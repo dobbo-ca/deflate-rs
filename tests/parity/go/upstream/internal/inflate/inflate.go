@@ -9,7 +9,7 @@
 // dict_decoder.go: the careful path. It owns every error and every
 // input read decision, so both equal compress/flate. The fast loop
 // (fast_generic.go) decodes common symbols in between and hands
-// back the exact stdlib state (design.md 4.1).
+// back the exact stdlib state.
 package inflate
 
 import (
@@ -497,7 +497,7 @@ readLiteral:
 			f.nb -= n
 		}
 
-		// Distance minimum 0: same reads (design.md 4.1).
+		// Distance minimum 0: same reads.
 		d, err := f.tableSym(f.dt[:], distBits, 0)
 		if err != nil {
 			f.err = err
@@ -724,7 +724,7 @@ func (f *Decoder) huffSym(h *huffmanDecoder) (int, error) {
 }
 
 // tableSym is huffSym on fast table t, with h.min = min: the same
-// reads, state and errors (design.md 4.1). It returns the entry.
+// reads, state and errors. It returns the entry.
 func (f *Decoder) tableSym(t []uint32, tableBits, min uint) (uint32, error) {
 	n := min
 	nb, b := f.nb, f.b
@@ -970,7 +970,7 @@ func (f *Decoder) fastRun() {
 		s.outLimit = min(s.outLimit, f.wpos+sumChunk)
 	}
 	fastLoop(s)
-	// Handoff, design.md 4.1; 0 is pulledAtEntry.
+	// Handoff; 0 is pulledAtEntry.
 	pos := s.inPos*8 - int(s.bitsleft)
 	pulled := max(0, (pos+int(s.slack)+7)>>3)
 	nb := uint(pulled*8 - pos)

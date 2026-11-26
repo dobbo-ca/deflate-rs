@@ -2,7 +2,7 @@
 
 ## Resource limits
 
-A call stays inside the limits you give it, so a caller in a small pod can bound it:
+A call stays inside the limits you give it, so a caller with little memory can bound it:
 
 ```rust
 use deflate::Limits;

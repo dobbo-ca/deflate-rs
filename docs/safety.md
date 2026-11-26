@@ -30,7 +30,7 @@ the tests and a differential fuzz target compare it with.
   load and one store. That instantiation (`AVX2 = true` in `run_impl`) also copies a short-period
   match (distance under 16) with PSHUFB and 32-byte stores; those intrinsics sit in `unsafe`
   blocks in the kernel, whose SAFETY comments name the detection. It is a kernel module under
-  the same decision; `DEFLATE_SIMD=scalar` turns it off. A unit test compares it with the generic
+  the same rule; `DEFLATE_SIMD=scalar` turns it off. A unit test compares it with the generic
   loop, bit-exact, and the fuzz targets run it on x86_64.
 
 `deflate::tiers()` (hidden) names the tiers dispatch picked; `tests/fast.rs` asserts VNNI (when
@@ -54,7 +54,7 @@ The loop only runs between symbols of the careful path, and stops before anythin
 handle (end of block, a bad code, a distance past the history, a missing code, the last bytes of
 input or output, a limit), with no side effect for that symbol; the careful path decodes it and
 reports any error. On the way out the loop hands back the bit buffer and the number of bytes
-Go's reader would have pulled (deflate-go design 4.1), so errors, offsets and reads equal Go's.
+Go's reader would have pulled (as deflate-go's fast loop does), so errors, offsets and reads equal Go's.
 `tests/fast.rs` compares it with the careful path alone (`decode_careful_into`, hidden) on the
 fixtures, mutations, random streams and matches at every length and distance across its margins;
 the `parity` job compares both with Go. It writes into the spare capacity of the output `Vec`

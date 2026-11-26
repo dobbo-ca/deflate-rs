@@ -3,8 +3,8 @@
 //	oracle -gen <fixtures> <inputs>   write the test inputs
 //	oracle <inputs> <manifest>        decode every input
 //	oracle -bench N <fixtures>        time the decode of every fixture
-//	oracle -qgen <tiles> <fixtures> <out> <slide>...   the quality gate inputs (quality.go)
-//	oracle -qdecode <in> <out>        decode the quality gate inputs to PGM/PPM
+//	oracle -qgen <tiles> <fixtures> <out> <slide>...   the real-file inputs (quality.go)
+//	oracle -qdecode <in> <out>        decode the real-file inputs to PGM/PPM
 //	oracle -qlarge <fixtures> <file>  the bench's 64 MiB stream
 //
 // Decode mode writes one manifest file, with a line per input (in byte order of the names) and
@@ -60,8 +60,8 @@ var (
 func main() {
 	gen := flag.Bool("gen", false, "write the inputs: -gen <fixtures> <inputs>")
 	bench := flag.Int("bench", 0, "decode every fixture N times: -bench N <fixtures>")
-	qg := flag.Bool("qgen", false, "quality gate inputs: -qgen <tiles> <fixtures> <out> <slide>...")
-	qd := flag.Bool("qdecode", false, "quality gate decode: -qdecode <in> <out>")
+	qg := flag.Bool("qgen", false, "real-file inputs: -qgen <tiles> <fixtures> <out> <slide>...")
+	qd := flag.Bool("qdecode", false, "real-file decode: -qdecode <in> <out>")
 	ql := flag.Bool("qlarge", false, "the bench's large stream: -qlarge <fixtures> <out-file>")
 	flag.Parse()
 	a := flag.Args()

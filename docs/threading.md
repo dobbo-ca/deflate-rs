@@ -3,8 +3,8 @@
 From the "Resource limits" section of [limits.md](limits.md).
 
 - Every function runs on the calling thread only, except `decode_parallel_into` and
-  `zlib::decode_parallel_into`. `Limits` has no `max_threads` field, on purpose: an exception to
-  the shared convention that every crate's `Limits` has one, kept so that tiff-rs, which builds
+  `zlib::decode_parallel_into`. `Limits` has no `max_threads` field, on purpose: it is kept
+  so that tiff-rs, which builds
   the `Limits { max_output, max_alloc }` struct literal, compiles unchanged. The two parallel
   functions take `max_threads` as an argument instead. `tests/threads.rs` checks that the other
   functions do not grow the process thread count.

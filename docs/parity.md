@@ -17,7 +17,7 @@
    `DEFLATE_SIMD=scalar` on the subset of the `parity-arm64` job (below), with at least 10,000 lines.
 
 Before the manifest the oracles wrote one file per input and operation: some 820,000 files and 11 GB,
-which filled the shared BuildKit disk (`no space left on device`) and could not go in the Actions
+which ran a build out of disk (`no space left on device`) and could not go in the Actions
 cache. The manifest holds exactly what was compared then (see "Operations and manifest").
 
 ## Inputs
@@ -156,7 +156,7 @@ A predictor input is `[op][spp][flag][w u32 LE][h u32 LE][src]`. `op` 0 is `undo
 The decoder is a port of the careful path of Go's `compress/flate` `inflate.go`: one input byte
 at a time, the same bit buffer, the same table lookups. So every error and its offset, and
 the bytes a reader consumes, come out as in Go. `decode_limit` ports the rules of deflate-go's
-`DecodeLimit` (design.md 3.1): it stops where a `LimitReader` over Go's reader stops, including
+`DecodeLimit`: it stops where a `LimitReader` over Go's reader stops, including
 the 32 KiB window flush.
 
 Every Go test is ported (`tests/`), covered by the oracle inputs, or not applicable here;
@@ -193,7 +193,7 @@ on a different line count. The `parity-arm64` job
 runs the oracle on a native arm64 runner and compares its manifest with Go, on a subset of
 the inputs ("Inputs" above), once per SIMD tier.
 
-`tests/parity/` has Go's sources at the pinned sha and a small Go program, run in CI over the same
+`tests/parity/` has a vendored copy of Go's sources (`tests/parity/go/upstream`) and a small Go program, run in CI over the same
 inputs as `examples/oracle.rs`, with the output or the error class of each input diffed
 (this page). `tests/` checks what needs no Go (the edge streams are also run through Go, see "Inputs" above):
 

@@ -27,7 +27,7 @@ package inflate
 // litlen symbol's start and n its code length; slack is what stdlib
 // read past pos for it (tables.go). The caller sets slack = 0 and
 // converts back to stdlib's state with pulled = ceil8(pos + slack)
-// (design.md 4.1).
+// (the handoff in inflate.go).
 //
 // Stop rules. Return before a symbol, with no side effects for it,
 // when outPos > outLimit at its start, or inPos > inLimit at the last

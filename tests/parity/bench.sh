@@ -26,7 +26,7 @@ rs="bench bench-v4"
 for b in bench-pgo bench-pgo-bolt; do
   if command -v $b >/dev/null; then rs="$rs $b"; fi
 done
-# Best of five runs per file and side: the machine is shared, and one run can be slow.
+# Best of five runs per file and side: a hosted runner is shared, and one run can be slow.
 best() {
   awk -F'\t' '!($1 in m) || $3 < m[$1] { m[$1] = $3; b[$1] = $2 } END { for (k in m) printf "%s\t%s\t%s\n", k, b[k], m[k] }' "$@" | sort
 }
